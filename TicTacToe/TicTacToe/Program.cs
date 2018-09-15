@@ -11,7 +11,7 @@ namespace TicTacToe
     {
         public static void Main(string[] args)
         {
-            var myGame = new Game();
+            var myGame = new TicTacToe();
             myGame.gameStart();
         }
     }
