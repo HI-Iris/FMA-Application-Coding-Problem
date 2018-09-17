@@ -30,25 +30,31 @@ namespace TicTacToeTests
         [TestCase("XXOOOXXXO", false)]
         //Draw
         [TestCase("XOOOXXXOO", false)]
+        //Draw
+        [TestCase("XOXXXOOXO", false)]
+        //Draw
+        [TestCase("XXOOXXXOO", false)]
+        //Draw
+        [TestCase("XXOOOXXOX", false)]
 
-        public void refereeTest(string boardString, bool isWin)
+        public void RefereeTest(string boardString, bool isWin)
         {
-            TicTacToe.TicTacToe ticTest = new TicTacToe.TicTacToe();
+            var ticTest = new TicTacToe.TicTacToe();
 
             //To simplify the logic, use int to define the board size, rather than MaxX and MaxY
-            string[,] myBoard = new string[3, 3];
+            var myBoard = new string[3, 3];
 
             //Substring the string in TestCase, generate my board
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                 {
                     myBoard[i, j] = boardString.Substring(i * 3 + j, 1);
                 }
             }
 
             //Function test
-            bool result = ticTest.referee(myBoard);
+            var result = ticTest.Referee(myBoard);
 
             //Result
             Assert.AreEqual(isWin, result);

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstString.cs" />
     <Compile Include="TicTacToe.cs" />
     <Compile Include="IGame.cs" />
     <Compile Include="ITicTacToe.cs" />

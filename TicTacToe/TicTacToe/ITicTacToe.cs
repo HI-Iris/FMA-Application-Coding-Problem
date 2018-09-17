@@ -3,10 +3,10 @@
     public interface ITicTacToe
     {
         void BoardPrint();
-        bool InputCoord();
-        bool MoveAccepted();
-        void Place(bool moveAccepted);
-        int PlayerChange(int currentPlayer);
+        bool EnterCommand();
+        bool GetCoord(bool isValidCoord);
+        bool CanPlace();
+        void PlayerChange();
         bool Referee(string[,] board);
     }
 }

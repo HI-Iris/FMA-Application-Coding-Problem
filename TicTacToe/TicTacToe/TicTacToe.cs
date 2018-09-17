@@ -6,9 +6,9 @@ namespace TicTacToe
     public class TicTacToe : ITicTacToe, IGame
     {
         //Number of rows
-        private int MaxX { set; get; }
+        private int MaxX { get; }
         //Number of columns
-        private int MaxY { set; get; }
+        private int MaxY { get; }
         //Check if someone won the game already
         private bool IsWin { set; get; }
         //X coordinate from player's input, range from 1 to MaxX
@@ -22,8 +22,7 @@ namespace TicTacToe
         //Player's input
         private string Command { set; get; }
         //Game board
-        private string[,] Board { set; get; }
-
+        private string[,] Board { get; }
 
         public TicTacToe()
         {
@@ -39,7 +38,7 @@ namespace TicTacToe
             {
                 for (int j = 0; j < MaxY; j++)
                 {
-                    Board[i, j] = ".";
+                    Board[i, j] = ConstString.DefaultBoard;
                 }
             }
         }
@@ -47,24 +46,21 @@ namespace TicTacToe
         //Start the game
         public void GameStart()
         {
+
             Console.WriteLine("Welcome to Tic Tac Toe!\n");
             BoardPrint();
             do
             {
-                enterCommand();
-                Place(InputCoord());
-                Referee(Board);
+                var isValidCoord = EnterCommand();
+                var canPlace = GetCoord(isValidCoord);
+                if (canPlace)
+                    Place();
+                IsWin = Referee(Board);
                 if (IsWin) break;
             } while (Count != MaxX * MaxY);
 
-            if (IsWin)
-            {
-                Console.WriteLine("Well done you've won the game!\n");
-            }
-            else
-            {
-                Console.WriteLine("Draw!\n");
-            }
+            Console.WriteLine(IsWin ? "Well done you've won the game!\n" : "Draw!\n");
+
             GameEnd();
         }
 
@@ -96,27 +92,24 @@ namespace TicTacToe
         }
 
         //Promote player to enter the coordinate of piece
-        public void enterCommand()
+        public bool EnterCommand()
         {
-            if (Player == 1)
-                Console.WriteLine("Player 1 enter a coord x,y to place your X or enter 'q' to give up:");
-            else
-                Console.WriteLine("Player 2 enter a coord x,y to place your O or enter 'q' to give up:");
+            Console.WriteLine((Player == 1) ? "Player 1 enter a coord x,y to place your X or enter 'q' to give up:" : "Player 2 enter a coord x,y to place your O or enter 'q' to give up:");
             Command = Console.ReadLine();
             Console.WriteLine();
+            return Utility.IsCoord(Command);
         }
 
         //Check the command and place piece, if it is a valid coordinate and movement then place the piece, if not, promote the input again
-        public bool InputCoord()
+        public bool GetCoord(bool isValidCoord)
         {
-            bool move = false;
-            bool valid = Utility.isValid(Command);
-            if (valid)
+            var canPlace = false;
+            if (isValidCoord)
             {
-                string[] coord = Command.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var coord = Command.Split(',');
                 CoordX = int.Parse(coord[0]) - 1;
                 CoordY = int.Parse(coord[1]) - 1;
-                move = MoveAccepted();
+                canPlace = CanPlace();
             }
             else if (Command.ToLower() == "q")
             {
@@ -127,13 +120,13 @@ namespace TicTacToe
             {
                 Console.WriteLine("Invalid input.\n");
             }
-            return move;
+            return canPlace;
         }
 
         //Check whether there is a piece placed on the entered coordinate, if not, return true to next step
-        public bool MoveAccepted()
+        public bool CanPlace()
         {
-            if (Board[CoordX, CoordY] == "X" || Board[CoordX, CoordY] == "O")
+            if (Board[CoordX, CoordY] == ConstString.PlayerOneId || Board[CoordX, CoordY] == ConstString.PlayerTwoId)
             {
                 Console.WriteLine("Oh no, a piece is already placed on this place! Try somewhere else...\n");
                 return false;
@@ -146,29 +139,27 @@ namespace TicTacToe
         //Or return to do-while loop, promote player to input a command again
         //When movement accepted, place the piece, change player, count the number of pieces on board and print board
         //When count = 9, draw situation occurred, break the do-while loop
-        public void Place(bool moveAccepted)
+        public void Place()
         {
-            if (!moveAccepted) return;
             switch (Player)
             {
                 case 1:
-                    Board[CoordX, CoordY] = "X";
+                    Board[CoordX, CoordY] = ConstString.PlayerOneId;
                     Count++;
                     break;
                 default:
-                    Board[CoordX, CoordY] = "O";
+                    Board[CoordX, CoordY] = ConstString.PlayerTwoId;
                     Count++;
                     break;
             }
-            Player = PlayerChange(Player);
+            PlayerChange();
             BoardPrint();
         }
 
         //Change the player
-        public int PlayerChange(int currentPlayer)
+        public void PlayerChange()
         {
-            if (currentPlayer == 1) return 2;
-            return 1;
+            Player = (Player == 1) ? 2 : 1;
         }
 
         //Pass the current board to referee(), check whether a win situation occurred, return the status, if someone won, break the do-while loop
@@ -176,22 +167,20 @@ namespace TicTacToe
         {
             for (int i = 0; i < MaxX; i++)
             {
-                if (IsWin) break;
                 for (int j = 0; j < MaxY; j++)
                 {
-                    if (currentBoard[i, j] == ".") continue;
+                    if (currentBoard[i, j] == ConstString.DefaultBoard) continue;
 
                     if ((i + 2 < MaxX && currentBoard[i, j] == currentBoard[i + 1, j] && currentBoard[i, j] == currentBoard[i + 2, j]) ||
                         (j + 2 < MaxY && currentBoard[i, j] == currentBoard[i, j + 1] && currentBoard[i, j] == currentBoard[i, j + 2]) ||
                         (i + 2 < MaxX && j + 2 < MaxY && currentBoard[i, j] == currentBoard[i + 1, j + 1] && currentBoard[i, j] == currentBoard[i + 2, j + 2]) ||
                         (i - 2 >= 0 && j + 2 < MaxY && currentBoard[i, j] == currentBoard[i - 1, j + 1] && currentBoard[i, j] == currentBoard[i - 2, j + 2]))
                     {
-                        IsWin = true;
-                        break;
+                        return true;
                     }
                 }
             }
-            return IsWin;
+            return false;
         }
     }
 }
