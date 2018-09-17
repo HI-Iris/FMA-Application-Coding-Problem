@@ -7,6 +7,6 @@
         bool moveAccepted();
         void place(bool moveAccepted);
         int playerChange(int currentPlayer);
-        void referee();
+        bool referee(string[,] board);
     }
 }

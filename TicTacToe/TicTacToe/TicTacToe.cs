@@ -53,9 +53,18 @@ namespace TicTacToe
             {
                 enterCommand();
                 place(inputCoord());
-                referee();
+                referee(Board);
+                if (IsWin) break;
             } while (Count != MaxX * MaxY);
-            Console.WriteLine("Draw!");
+
+            if (IsWin)
+            {
+                Console.WriteLine("Well done you've won the game!");
+            }
+            else
+            {
+                Console.WriteLine("Draw!");
+            }
             gameEnd();
         }
 
@@ -79,7 +88,7 @@ namespace TicTacToe
             Console.WriteLine("Here's the current board:");
             for (int i = 0; i < MaxX; i++)
             {
-                for (int j = 0; j < MaxY; j++)
+                for (int j = 0; j < MaxX; j++)
                 {
                     Console.Write(Board[i, j] + " ");
                 }
@@ -125,7 +134,7 @@ namespace TicTacToe
             return move;
         }
 
-        //Check whether there is a piece placed on the entered coordinate, if not, place the piece
+        //Check whether there is a piece placed on the entered coordinate, if not, return true to next step
         public bool moveAccepted()
         {
             if (Board[CoordX, CoordY] == "X" || Board[CoordX, CoordY] == "O")
@@ -135,13 +144,15 @@ namespace TicTacToe
                 Console.WriteLine();
                 return false;
             }
-
             Console.WriteLine();
             Console.WriteLine("Move accepted");
             return true;
         }
 
-        //Place the piece on board if the movement is acceptable, check if it is a draw situation
+        //Place the piece on board if the movement is acceptable
+        //Or return to do-while loop, promote player to input a command again
+        //When movement accepted, place the piece, change player, count the number of pieces on board and print board
+        //When count = 9, draw situation occurred, break the do-while loop
         public void place(bool moveAccepted)
         {
             if (!moveAccepted) return;
@@ -156,7 +167,6 @@ namespace TicTacToe
                     Count++;
                     break;
             }
-
             Player = playerChange(Player);
             boardPrint();
         }
@@ -168,29 +178,27 @@ namespace TicTacToe
             return 1;
         }
 
-        //Check the winner of game
-        public void referee()
+        //Pass the current board to referee(), check whether a win situation occurred, return the status, if someone won, break the do-while loop
+        public bool referee(string[,] currentBoard)
         {
             for (int i = 0; i < MaxX; i++)
             {
                 if (IsWin) break;
                 for (int j = 0; j < MaxY; j++)
                 {
-                    if (Board[i, j] == ".") continue;
+                    if (currentBoard[i, j] == ".") continue;
 
-                    if ((i + 2 < MaxX && Board[i, j] == Board[i + 1, j] && Board[i, j] == Board[i + 2, j]) ||
-                        (j + 2 < MaxY && Board[i, j] == Board[i, j + 1] && Board[i, j] == Board[i, j + 2]) ||
-                        (i + 2 < MaxX && j + 2 < MaxY && Board[i, j] == Board[i + 1, j + 1] && Board[i, j] == Board[i + 2, j + 2]) ||
-                        (i - 2 > 0 && j + 2 < MaxY && Board[i, j] == Board[i - 1, j + 1] && Board[i, j] == Board[i - 2, j + 2]))
+                    if ((i + 2 < MaxX && currentBoard[i, j] == currentBoard[i + 1, j] && currentBoard[i, j] == currentBoard[i + 2, j]) ||
+                        (j + 2 < MaxY && currentBoard[i, j] == currentBoard[i, j + 1] && currentBoard[i, j] == currentBoard[i, j + 2]) ||
+                        (i + 2 < MaxX && j + 2 < MaxY && currentBoard[i, j] == currentBoard[i + 1, j + 1] && currentBoard[i, j] == currentBoard[i + 2, j + 2]) ||
+                        (i - 2 >= 0 && j + 2 < MaxY && currentBoard[i, j] == currentBoard[i - 1, j + 1] && currentBoard[i, j] == currentBoard[i - 2, j + 2]))
                     {
                         IsWin = true;
                         break;
                     }
                 }
             }
-            if (!IsWin) return;
-            Console.WriteLine("Well done you've won the game! ");
-            gameEnd();
+            return IsWin;
         }
     }
 }
