@@ -45,33 +45,32 @@ namespace TicTacToe
         }
 
         //Start the game
-        public void gameStart()
+        public void GameStart()
         {
-            Console.WriteLine("Welcome to Tic Tac Toe! ");
-            boardPrint();
+            Console.WriteLine("Welcome to Tic Tac Toe!\n");
+            BoardPrint();
             do
             {
                 enterCommand();
-                place(inputCoord());
-                referee(Board);
+                Place(InputCoord());
+                Referee(Board);
                 if (IsWin) break;
             } while (Count != MaxX * MaxY);
 
             if (IsWin)
             {
-                Console.WriteLine("Well done you've won the game!");
+                Console.WriteLine("Well done you've won the game!\n");
             }
             else
             {
-                Console.WriteLine("Draw!");
+                Console.WriteLine("Draw!\n");
             }
-            gameEnd();
+            GameEnd();
         }
 
         //End the game
-        public void gameEnd()
+        public void GameEnd()
         {
-            Console.WriteLine();
             Console.WriteLine("Application will be closed in 5 seconds:");
             for (int i = 5; i > 0; i--)
             {
@@ -82,9 +81,8 @@ namespace TicTacToe
         }
 
         //Print current board
-        public void boardPrint()
+        public void BoardPrint()
         {
-            Console.WriteLine();
             Console.WriteLine("Here's the current board:");
             for (int i = 0; i < MaxX; i++)
             {
@@ -105,10 +103,11 @@ namespace TicTacToe
             else
                 Console.WriteLine("Player 2 enter a coord x,y to place your O or enter 'q' to give up:");
             Command = Console.ReadLine();
+            Console.WriteLine();
         }
 
         //Check the command and place piece, if it is a valid coordinate and movement then place the piece, if not, promote the input again
-        public bool inputCoord()
+        public bool InputCoord()
         {
             bool move = false;
             bool valid = Utility.isValid(Command);
@@ -117,35 +116,29 @@ namespace TicTacToe
                 string[] coord = Command.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 CoordX = int.Parse(coord[0]) - 1;
                 CoordY = int.Parse(coord[1]) - 1;
-                move = moveAccepted();
+                move = MoveAccepted();
             }
             else if (Command.ToLower() == "q")
             {
-                Console.WriteLine();
                 Console.WriteLine("Player " + Player + " give up, game over");
-                gameEnd();
+                GameEnd();
             }
             else
             {
-                Console.WriteLine();
-                Console.WriteLine("Invalid input.");
-                Console.WriteLine();
+                Console.WriteLine("Invalid input.\n");
             }
             return move;
         }
 
         //Check whether there is a piece placed on the entered coordinate, if not, return true to next step
-        public bool moveAccepted()
+        public bool MoveAccepted()
         {
             if (Board[CoordX, CoordY] == "X" || Board[CoordX, CoordY] == "O")
             {
-                Console.WriteLine();
-                Console.WriteLine("Oh no, a piece is already placed on this place! Try somewhere else...");
-                Console.WriteLine();
+                Console.WriteLine("Oh no, a piece is already placed on this place! Try somewhere else...\n");
                 return false;
             }
-            Console.WriteLine();
-            Console.WriteLine("Move accepted");
+            Console.WriteLine("Move accepted\n");
             return true;
         }
 
@@ -153,7 +146,7 @@ namespace TicTacToe
         //Or return to do-while loop, promote player to input a command again
         //When movement accepted, place the piece, change player, count the number of pieces on board and print board
         //When count = 9, draw situation occurred, break the do-while loop
-        public void place(bool moveAccepted)
+        public void Place(bool moveAccepted)
         {
             if (!moveAccepted) return;
             switch (Player)
@@ -167,19 +160,19 @@ namespace TicTacToe
                     Count++;
                     break;
             }
-            Player = playerChange(Player);
-            boardPrint();
+            Player = PlayerChange(Player);
+            BoardPrint();
         }
 
         //Change the player
-        public int playerChange(int currentPlayer)
+        public int PlayerChange(int currentPlayer)
         {
             if (currentPlayer == 1) return 2;
             return 1;
         }
 
         //Pass the current board to referee(), check whether a win situation occurred, return the status, if someone won, break the do-while loop
-        public bool referee(string[,] currentBoard)
+        public bool Referee(string[,] currentBoard)
         {
             for (int i = 0; i < MaxX; i++)
             {

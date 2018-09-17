@@ -2,7 +2,7 @@
 {
     interface IGame
     {
-        void gameStart();
-        void gameEnd();
+        void GameStart();
+        void GameEnd();
     }
 }
