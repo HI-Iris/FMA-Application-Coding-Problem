@@ -2,11 +2,8 @@
 {
     public interface ITicTacToe
     {
-        void BoardPrint();
-        bool EnterCommand();
         bool GetCoord(bool isValidCoord);
-        bool CanPlace();
+        void Place();
         void PlayerChange();
-        bool Referee(string[,] board);
     }
 }
