@@ -49,7 +49,7 @@ namespace TicTacToe
                 switch (validCommand)
                 {
                     case 1:
-                        TicInputCoord = TicInputCoord.GetCoord(TicPlayers, CurrentTicPlayer);
+                        TicInputCoord = TicInputCoord.GetCoord(CurrentTicPlayer);
                         break;
                     case 2:
                         Console.WriteLine(GiveUp);

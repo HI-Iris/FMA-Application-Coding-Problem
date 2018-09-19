@@ -8,7 +8,7 @@ namespace TicTacToe
         public int CoordY;
 
         //Check the command and place piece, if it is a valid coordinate and movement then place the piece, if not, promote the input again
-        public InputCoord GetCoord(List<Player> players, Player currentPlayer)
+        public InputCoord GetCoord(Player currentPlayer)
         {
             var coordArray = currentPlayer.PlayerCommand.Split(',');
             var coord = new InputCoord();
