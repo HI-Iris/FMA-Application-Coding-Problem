@@ -4,54 +4,86 @@ using System.Threading;
 
 namespace TicTacToe
 {
-    public class TicTacToe : ITicTacToe, IGame
+    public class TicTacToe
     {
-        private int MaxNumOfRowsX { get; }
-        private int MaxNumOfColsY { get; }
+        private const string DefaultBoard = ".";
+        private const string Welcome = "Welcome to Tic Tac Toe!\n";
+        private const string Win = "Well done you've won the game!\n";
+        private const string Draw = "Draw!\n";
+        private const string GiveUp = "Player gives up, game over!";
+        private const string BoardPrint = "Here's the current board:";
+        private const string AppClose = "Application will be closed in 5 seconds:";
+        private const string PlaceTaken = "\nOh no, a piece is already placed on this place! Try somewhere else...\n";
+        private const string InvalidInput = "\nInvalid input. Please try again.\n";
+        private const string MoveAccepted = "\nMove accepted\n";
+        private const int MaxNumOfRowsX = 3;
+        private const int MaxNumOfColsY = 3;
         private bool PlayerWin { set; get; }
         private GameBoard TicBoard { get; set; }
-        private Player CurrentPlayer { set; get; }
-        private List<Player> Players { get; }
+        private Player CurrentTicPlayer { set; get; }
+        private List<Player> TicPlayers { get; }
         private Referee TicReferee { set; get; }
+        private InputCoord TicInputCoord { set; get; }
 
         public TicTacToe()
         {
-            MaxNumOfRowsX = 3;
-            MaxNumOfColsY = 3;
             PlayerWin = false;
             TicReferee = new Referee();
-            Players = new List<Player> { new Player(1, "X"), new Player(2, "O") };
-            CurrentPlayer = Players[0];
-            TicBoard = new GameBoard(MaxNumOfRowsX, MaxNumOfColsY);
-            TicBoard.PieceCount = 0;
+            TicInputCoord = new InputCoord();
+            TicPlayers = new List<Player> { new Player(1, "X"), new Player(2, "O") };
+            CurrentTicPlayer = TicPlayers[0];
+            TicBoard = new GameBoard(MaxNumOfRowsX, MaxNumOfColsY, DefaultBoard) { PieceCount = 0 };
         }
 
         //Start the game
         public void GameStart()
         {
-            Console.WriteLine(ConstString.Welcome);
+            Console.WriteLine(Welcome);
+            Console.WriteLine(BoardPrint);
             TicBoard.PrintBoard(TicBoard.Board);
             do
             {
-                var validCoord = CurrentPlayer.EnterCommand(CurrentPlayer);
-                var canPlace = GetCoord(validCoord);
+                Console.WriteLine("Player " + CurrentTicPlayer.PlayerId + " enter a coord x,y to place your " + CurrentTicPlayer.PlayerPiece + " or enter 'q' to give up:");
+                CurrentTicPlayer.PlayerCommand = CurrentTicPlayer.EnterCommand();
+                var validCommand = TicReferee.IsValidCommand(CurrentTicPlayer.PlayerCommand);
+                switch (validCommand)
+                {
+                    case 1:
+                        TicInputCoord = TicInputCoord.GetCoord(TicPlayers, CurrentTicPlayer);
+                        break;
+                    case 2:
+                        Console.WriteLine(GiveUp);
+                        GameEnd();
+                        break;
+                    default:
+                        Console.WriteLine(InvalidInput);
+                        continue;
+                }
+                var canPlace = TicReferee.CanPlace(TicBoard, TicInputCoord, TicPlayers);
                 if (canPlace)
                 {
+                    Console.WriteLine(MoveAccepted);
                     Place();
                     PlayerChange();
+                    Console.WriteLine(BoardPrint);
                     TicBoard.PrintBoard(TicBoard.Board);
                 }
-                PlayerWin = TicReferee.IsWin(TicBoard.Board, MaxNumOfRowsX, MaxNumOfColsY);
+                else
+                {
+                    Console.WriteLine(PlaceTaken);
+                    continue;
+                }
+                PlayerWin = TicReferee.IsWin(TicBoard.Board, MaxNumOfRowsX, MaxNumOfColsY, DefaultBoard);
                 if (PlayerWin) break;
             } while (TicBoard.PieceCount != MaxNumOfRowsX * MaxNumOfColsY);
-            Console.WriteLine(PlayerWin ? ConstString.Win : ConstString.Draw);
+            Console.WriteLine(PlayerWin ? Win : Draw);
             GameEnd();
         }
 
         //End the game
         public void GameEnd()
         {
-            Console.WriteLine(ConstString.AppClose);
+            Console.WriteLine(AppClose);
             for (var i = 5; i > 0; i--)
             {
                 Console.WriteLine(i);
@@ -60,40 +92,17 @@ namespace TicTacToe
             Environment.Exit(0);
         }
 
-        //Check the command and place piece, if it is a valid coordinate and movement then place the piece, if not, promote the input again
-        public bool GetCoord(bool isValidCoord)
-        {
-            if (isValidCoord)
-            {
-                var coordArray = CurrentPlayer.PlayerCommand.Split(',');
-                TicBoard.InputCoordX = int.Parse(coordArray[0]) - 1;
-                TicBoard.InputCoordY = int.Parse(coordArray[1]) - 1;
-                return TicReferee.CanPlace(TicBoard, Players);
-            }
-            if (CurrentPlayer.PlayerCommand.ToLower() == "q")
-            {
-                Console.WriteLine(ConstString.GiveUp);
-                GameEnd();
-            }
-            else
-            {
-                Console.WriteLine(ConstString.InvalidInput);
-            }
-            return false;
-        }
-
-        //Place the piece on board if the movement is acceptable
-        //Or return to do-while loop, promote player to input a command again
+        //Place the piece on board
         public void Place()
         {
-            switch (CurrentPlayer.PlayerId)
+            switch (CurrentTicPlayer.PlayerId)
             {
                 case 1:
-                    TicBoard.Board[TicBoard.InputCoordX, TicBoard.InputCoordY] = Players[0].PlayerPiece;
+                    TicBoard.Board[TicInputCoord.CoordX, TicInputCoord.CoordY] = TicPlayers[0].PlayerPiece;
                     TicBoard.PieceCount++;
                     break;
                 default:
-                    TicBoard.Board[TicBoard.InputCoordX, TicBoard.InputCoordY] = Players[1].PlayerPiece;
+                    TicBoard.Board[TicInputCoord.CoordX, TicInputCoord.CoordY] = TicPlayers[1].PlayerPiece;
                     TicBoard.PieceCount++;
                     break;
             }
@@ -102,11 +111,8 @@ namespace TicTacToe
         //Change the player
         public void PlayerChange()
         {
-            CurrentPlayer = (CurrentPlayer.PlayerId == 1) ? Players[1] : Players[0];
+            CurrentTicPlayer = (CurrentTicPlayer.PlayerId == 1) ? TicPlayers[1] : TicPlayers[0];
         }
-
-
-
     }
 }
 

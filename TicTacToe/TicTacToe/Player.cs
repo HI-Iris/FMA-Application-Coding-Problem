@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace TicTacToe
 {
     public class Player
@@ -16,12 +15,9 @@ namespace TicTacToe
         }
 
         //Player enter a command
-        public bool EnterCommand(Player currentPlayer)
+        public string EnterCommand()
         {
-            Console.WriteLine("Player " + currentPlayer.PlayerId + " enter a coord x,y to place your " + currentPlayer.PlayerPiece + " or enter 'q' to give up:");
-            currentPlayer.PlayerCommand = Console.ReadLine();
-            Console.WriteLine();
-            return Referee.IsValidCoord(currentPlayer.PlayerCommand);
+            return Console.ReadLine();
         }
     }
 }

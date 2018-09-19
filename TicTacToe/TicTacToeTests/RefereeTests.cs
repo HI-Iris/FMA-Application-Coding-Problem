@@ -55,24 +55,27 @@ namespace TicTacToeTests
                 }
             }
             //Function test
-            bool result = ticReferee.IsWin(myBoard, 3, 3);
+            bool result = ticReferee.IsWin(myBoard, 3, 3, ".");
             //Result
             Assert.AreEqual(isWin, result);
         }
 
-        [TestCase("1,1", true)]
-        [TestCase("1,3", true)]
-        [TestCase("3,2", true)]
-        [TestCase("2,2", true)]
-        [TestCase("4,4", false)]
-        [TestCase("xyz", false)]
-        [TestCase("11", false)]
-        [TestCase("", false)]
-        [TestCase("@#$", false)]
-        public void IsValidCoordTest(string command, bool isValid)
+        [TestCase("1,1", 1)]
+        [TestCase("1,3", 1)]
+        [TestCase("3,2", 1)]
+        [TestCase("2,2", 1)]
+        [TestCase("4,4", 3)]
+        [TestCase("xyz", 3)]
+        [TestCase("11", 3)]
+        [TestCase("", 3)]
+        [TestCase("@#$", 3)]
+        [TestCase("q", 2)]
+        [TestCase("Q", 2)]
+        public void IsValidCommand(string command, int commandStatus)
         {
-            var result = Referee.IsValidCoord(command);
-            Assert.AreEqual(isValid, result);
+            Referee ticReferee = new Referee();
+            var result = ticReferee.IsValidCommand(command);
+            Assert.AreEqual(commandStatus, result);
         }
     }
 }
