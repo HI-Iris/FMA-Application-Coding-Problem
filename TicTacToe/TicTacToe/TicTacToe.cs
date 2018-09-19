@@ -59,7 +59,7 @@ namespace TicTacToe
                         Console.WriteLine(InvalidInput);
                         continue;
                 }
-                var canPlace = TicReferee.CanPlace(TicBoard, TicInputCoord, TicPlayers);
+                var canPlace = TicReferee.CanPlace(TicBoard, TicInputCoord, DefaultBoard);
                 if (canPlace)
                 {
                     Console.WriteLine(MoveAccepted);

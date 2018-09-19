@@ -1,15 +1,17 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using NUnit.Framework;
 using TicTacToe;
 
 
 namespace TicTacToeTests
 {
 
+    [TestFixture()]
     public class RefereeTests
     {
         //Left column same
         [TestCase("XOOX..X..", true)]
-        //Middle column same
         //Middle column same
         [TestCase(".X..XOOX.", true)]
         //Right column same
@@ -39,24 +41,19 @@ namespace TicTacToeTests
         //Draw
         [TestCase("XXOOOXXOX", false)]
 
+
         public void IsWinTest(string boardString, bool isWin)
         {
-            Referee ticReferee = new Referee();
-
-            //To simplify the logic, use int to define the board size, rather than MaxX and MaxY
-            string[,] myBoard = new string[3, 3];
-
-            //Substring the string in TestCase, generate my board
-            for (int i = 0; i < 3; i++)
+            var ticReferee = new Referee();
+            var myBoard = new string[3, 3];
+            for (var i = 0; i < 3; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                 {
                     myBoard[i, j] = boardString.Substring(i * 3 + j, 1);
                 }
             }
-            //Function test
-            bool result = ticReferee.IsWin(myBoard, 3, 3, ".");
-            //Result
+            var result = ticReferee.IsWin(myBoard, 3, 3, ".");
             Assert.AreEqual(isWin, result);
         }
 
@@ -71,11 +68,39 @@ namespace TicTacToeTests
         [TestCase("@#$", 3)]
         [TestCase("q", 2)]
         [TestCase("Q", 2)]
-        public void IsValidCommand(string command, int commandStatus)
+        public void IsValidCommandTest(string command, int commandStatus)
         {
             Referee ticReferee = new Referee();
             var result = ticReferee.IsValidCommand(command);
             Assert.AreEqual(commandStatus, result);
+        }
+
+        [TestCase("XXOOOXXOX", false)]
+        [TestCase("XOOX..X..", false)]
+        [TestCase(".X..XOOX.", true)]
+        [TestCase("O.X.O...X", false)]
+        [TestCase("XXXOO....", false)]
+        [TestCase(".........", true)]
+        [TestCase(".....X...", true)]
+        [TestCase(".....OX..", true)]
+        [TestCase(".XO.O.O.X", true)]
+        [TestCase("X.O.X.O.X", false)]
+        [TestCase("OXXXO...O", false)]
+        //Check if a player can place on the first cell of board,myBoard.Board[0,0]
+        public void CanPlaceTest(string boardString, bool canPlace)
+        {
+            var ticReferee = new Referee();
+            var myBoard = new GameBoard(3, 3, ".");
+            var coord = new InputCoord { CoordX = 0, CoordY = 0 };
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    myBoard.Board[i, j] = boardString.Substring(i * 3 + j, 1);
+                }
+            }
+            var result = ticReferee.CanPlace(myBoard, coord, ".");
+            Assert.AreEqual(canPlace, result);
         }
     }
 }

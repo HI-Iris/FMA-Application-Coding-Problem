@@ -20,9 +20,9 @@ namespace TicTacToe
         }
 
         //Check whether there is a piece placed on the entered coordinate, if not, return true to next step
-        public bool CanPlace(GameBoard ticBoard, InputCoord ticCoord, List<Player> ticPlayers)
+        public bool CanPlace(GameBoard ticBoard, InputCoord ticCoord, string defaultBoard)
         {
-            return ticBoard.Board[ticCoord.CoordX, ticCoord.CoordY] != ticPlayers[0].PlayerPiece && ticBoard.Board[ticCoord.CoordX, ticCoord.CoordY] != ticPlayers[1].PlayerPiece;
+            return ticBoard.Board[ticCoord.CoordX, ticCoord.CoordY] == defaultBoard;
         }
 
         //Check whether a win situation occurred, return the status, if someone won, break the do-while loop
